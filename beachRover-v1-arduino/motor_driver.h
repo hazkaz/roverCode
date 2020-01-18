@@ -8,7 +8,7 @@ enum turn {
   right_turn,
   straight,
   stop_moving,
-  reverse
+  reverse_direction
 };
 
 void driveMotor(turn direction);

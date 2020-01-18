@@ -35,15 +35,16 @@ void driveMotor(turn direction) {
       digitalWrite(RIGHT_INPUT_1, 1);
       digitalWrite(RIGHT_INPUT_2, 1);
       break;
-    case reverse:
+    case reverse_direction:
       digitalWrite(LEFT_INPUT_1, 0);
       digitalWrite(LEFT_INPUT_2, 1);
       digitalWrite(RIGHT_INPUT_1, 0);
       digitalWrite(RIGHT_INPUT_2, 1);
+      break;
     default:
       digitalWrite(LEFT_INPUT_1, 0);
       digitalWrite(LEFT_INPUT_2, 0);
       digitalWrite(RIGHT_INPUT_1, 0);
       digitalWrite(RIGHT_INPUT_2, 0);
-  }
+  } 
 }
