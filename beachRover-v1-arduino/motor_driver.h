@@ -11,4 +11,4 @@ enum turn {
   reverse_direction
 };
 
-void driveMotor(turn direction);
+void driveMotor(float angle,float speed);
