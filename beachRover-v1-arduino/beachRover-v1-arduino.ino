@@ -1,10 +1,15 @@
 #include "motor_driver.h"
 #include "SR04.h"
+#include "MechaQMC5883.h"
+#include <Wire.h>
 
 #define TRIG_PIN 8
 #define ECHO_PIN 7
 
 SR04 sr04 = SR04(ECHO_PIN, TRIG_PIN);
+
+MechaQMC5883 qmc;
+
 long current_distance;
 turn next_avoid = right_turn;
 bool avoided = true;
@@ -19,6 +24,8 @@ double left_wheel_speed = 0;
 double right_wheel_speed = 0;
 double current_speed = 0.0;
 bool forward = true;
+float max_mag_value = -8000.0;
+float min_mag_value = 8000.0;
 
 void left_encoder_update() {
   left_wheel_encoder_count += .05;
@@ -31,7 +38,11 @@ void right_encoder_update() {
 
 void setup() {
 
+  Wire.begin();
   Serial.begin(9600);
+
+  // Magnetometer
+  qmc.init();
 
   //pinModes
   pinMode(LEFT_INPUT_1, OUTPUT);
@@ -43,6 +54,7 @@ void setup() {
   //encoder interrupts
   attachInterrupt(digitalPinToInterrupt(2), left_encoder_update, RISING);
   attachInterrupt(digitalPinToInterrupt(3), right_encoder_update, RISING);
+
 }
 
 double kalman(double prev_value, double new_value, double ratio) {
@@ -50,32 +62,45 @@ double kalman(double prev_value, double new_value, double ratio) {
 }
 
 void loop() {
-  //  current_distance = sr04.Distance();
-  unsigned long current_time = millis();
-  distance_travelled = (left_wheel_encoder_count + right_wheel_encoder_count) / 2;
-  double current_left_wheel_speed = (left_wheel_encoder_count - prev_left_wheel_encoder_count) * 1000 * 60;
-  left_wheel_speed = kalman(left_wheel_speed, current_left_wheel_speed, 0.8) / (current_time - prev_time);
-  double current_right_wheel_speed = (right_wheel_encoder_count - prev_right_wheel_encoder_count) * 1000 * 60;
-  right_wheel_speed = kalman(right_wheel_speed, current_right_wheel_speed, 0.8) / (current_time - prev_time);
+  int x, y, z;
+  qmc.read(&x, &y, &z);
+//
+//  //  current_distance = sr04.Distance();
+//  unsigned long current_time = millis();
+//  distance_travelled = (left_wheel_encoder_count + right_wheel_encoder_count) / 2;
+//  double current_left_wheel_speed = (left_wheel_encoder_count - prev_left_wheel_encoder_count) * 1000 * 60;
+//  left_wheel_speed = kalman(left_wheel_speed, current_left_wheel_speed, 0.8) / (current_time - prev_time);
+//  double current_right_wheel_speed = (right_wheel_encoder_count - prev_right_wheel_encoder_count) * 1000 * 60;
+//  right_wheel_speed = kalman(right_wheel_speed, current_right_wheel_speed, 0.8) / (current_time - prev_time);
+//
+//  prev_left_wheel_encoder_count = left_wheel_encoder_count;
+//  prev_right_wheel_encoder_count = right_wheel_encoder_count;
+//  prev_time = millis();
+//  //  current_direction = kalman(current_direction, 180 + (left_wheel_speed - right_wheel_speed) * 5, 0.8);
+//
+//
+//  float diff = (float)max_mag_value - x;
+//
+//  if (x > max_mag_value) {
+//    max_mag_value = (float)x;
+//    diff = 0.0;
+//  }
+//  if (x < min_mag_value) {
+//    min_mag_value = (float)x;
+//  }
+//
+//  float correction = diff / (4.0 * (max_mag_value - min_mag_value));
+//  correction = 0.5 - correction;
+  Serial.print(x);
+  Serial.print('\t');
+  Serial.println(y);
+//  Serial.print(max_mag_value);
+//  Serial.print('\t');
+//  Serial.print(min_mag_value);
+//  Serial.print('\t');
+//  Serial.println(correction);
+//  driveMotor(correction, 0.35);
 
-  prev_left_wheel_encoder_count = left_wheel_encoder_count;
-  prev_right_wheel_encoder_count = right_wheel_encoder_count;
-  prev_time = millis();
-  //  current_direction = kalman(current_direction, 180 + (left_wheel_speed - right_wheel_speed) * 5, 0.8);
-
-  if (forward) {
-    driveMotor(0.5, current_speed);
-    current_speed += 0.1;
-    if (current_speed >= 1) {
-      forward = false;
-    }
-  } else {
-    driveMotor(0.5, current_speed);
-    current_speed -= 0.1;
-    if (current_speed <= 0) {
-      forward = true;
-    }
-  }
   delay(100);
   //  if (current_distance < 13 && avoided) {
   //    driveMotor(reverse_direction);

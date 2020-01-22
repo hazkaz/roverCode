@@ -21,11 +21,12 @@ void driveMotor(float angle, float speed) {
     angle = 0;
   }
 
-  int left_motor_speed = angle * 255 * speed*2;
-  int right_motor_speed = (1 - angle) * 255 * speed*2;
-  Serial.println(left_motor_speed);
+  int left_motor_speed = angle * 255 * speed * 2;
+  left_motor_speed = constrain(left_motor_speed, 0, 255);
+  int right_motor_speed = (1 - angle) * 255 * speed * 2;
+  right_motor_speed = constrain(right_motor_speed, 0, 255);
   if (speed > 0) {
-    analogWrite(LEFT_INPUT_1, left_motor_speed);
+  analogWrite(LEFT_INPUT_1, left_motor_speed);
     analogWrite(LEFT_INPUT_2, 0);
     analogWrite(RIGHT_INPUT_1, right_motor_speed);
     analogWrite(RIGHT_INPUT_2, 0);
