@@ -39,7 +39,7 @@ void right_encoder_update() {
 void setup() {
 
   Wire.begin();
-  Serial.begin(9600);
+  Serial.begin(115200);
 
   // Magnetometer
   qmc.init();
@@ -91,9 +91,23 @@ void loop() {
 //
 //  float correction = diff / (4.0 * (max_mag_value - min_mag_value));
 //  correction = 0.5 - correction;
-  Serial.print(x);
-  Serial.print('\t');
-  Serial.println(y);
+//  Serial.print(x);
+//  Serial.print('\t');
+//  Serial.println(y);
+    if(Serial.available()){
+      String command = Serial.readStringUntil('\n');
+      if(command.equals("on")){
+        digitalWrite(LED_BUILTIN,HIGH);
+        Serial.write("led is now on\n");
+      } else if(command.equals("off")){
+        digitalWrite(LED_BUILTIN,LOW);
+        Serial.write("led is now off\n");
+      } else{
+        Serial.write("invalid command\n");
+      }
+      Serial.flush();
+    }
+    
 //  Serial.print(max_mag_value);
 //  Serial.print('\t');
 //  Serial.print(min_mag_value);
