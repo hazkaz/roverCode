@@ -1,8 +1,9 @@
-#include "motor_driver.h"
 #include<SR04.h>
+#include<Wire.h>
+
+#include "motor_driver.h"
 #include "robot.h"
 #include "QMC5883L-offset.h"
-#include<Wire.h>
 
 #define TRIG_PIN 8
 #define ECHO_PIN 7
@@ -12,6 +13,7 @@
 
 
 SR04 sr04 = SR04(ECHO_PIN, TRIG_PIN);
+
 
 //MechaQMC5883 qmc;
 QMC5883L compass;
@@ -47,25 +49,29 @@ void right_encoder_update() {
 
 void setup() {
 
+  // Initialize I2C and Serial port
   Wire.begin();
-//  Serial.begin(9600);
+  Serial.begin(9600);
   
   // Magnetometer
   compass.init(2666,120,0);
   compass.setMode(Mode_Continuous,ODR_100Hz,RNG_2G,OSR_512);
-
 
   //pinModes
   pinMode(LEFT_INPUT_1, OUTPUT);
   pinMode(LEFT_INPUT_2, OUTPUT);
   pinMode(RIGHT_INPUT_1, OUTPUT);
   pinMode(RIGHT_INPUT_2, OUTPUT);
-//  pinMode(17,OUTPUT);
-  pinMode(14,OUTPUT);
+  pinMode(GREEN_LED,OUTPUT);
+  pinMode(YELLOW_LED,OUTPUT);
   pinMode(LED_BUILTIN, OUTPUT);
+  
   //encoder interrupts
   attachInterrupt(digitalPinToInterrupt(2), left_encoder_update, RISING);
   attachInterrupt(digitalPinToInterrupt(3), right_encoder_update, RISING);
+
+  // test buzzer and LED
+  run_diagnostics();
 
 }
 
@@ -74,7 +80,7 @@ double kalman(double prev_value, double new_value, double ratio) {
 }
 
 void loop() {
-//  test_leds();
+
   int x, y, z;
   compass.read(&x, &y, &z);
   float heading = atan2(y, x);
