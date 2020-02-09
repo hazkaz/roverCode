@@ -21,6 +21,22 @@ long readLong() {
   return NULL;
 }
 
+float readFloat(){
+  unsigned long startTime = millis();
+  while((Serial.available()<sizeof(float) && (millis() - startTime)<timeout)){};
+  if(Serial.available()>0){
+    size_t bytesRead;
+    byte floatBuffer[sizeof(float)];
+    bytesRead = Serial.readBytes(floatBuffer,sizeof(float));
+    if(bytesRead==sizeof(float)){
+      float receivedFloat;
+      memcpy(&receivedFloat,floatBuffer,sizeof(float));
+      return receivedFloat;
+    }
+  }
+  return NULL;
+}
+
 int readInt() {
   unsigned long startTime = millis();
   while ((Serial.available() < sizeof(int)) && (millis() - startTime) < timeout) {};
@@ -66,7 +82,8 @@ bool readCommand(Command* command) {
       if (commandType == NULL) {
         return false;
       }
-      long commandParam = readLong();
+      float commandParam = readFloat();
+//      Serial.println(commandParam);
       if (commandParam == NULL) {
         return false;
       }
@@ -81,4 +98,22 @@ bool readCommand(Command* command) {
     }
   }
   return false;
+}
+
+void sendInfo(Info * info){
+  if(Serial.availableForWrite()){
+//    Serial.println('^');
+//    Serial.println(info->sensor);
+//    Serial.println(info->x);
+//    Serial.println(info->y);
+//    Serial.println(info->z);
+
+    
+    Serial.write('^');
+    Serial.write((byte *)&(info->sensor),2);
+    Serial.write((byte *)&(info->x),4);
+    Serial.write((byte *)&(info->y),4);
+    Serial.write((byte *)&(info->z),4);
+    Serial.write(10);
+  }
 }

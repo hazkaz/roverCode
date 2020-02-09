@@ -8,7 +8,8 @@ def test_constant_command_acknowledgements():
 		for i in range(100):
 			const_int = 1
 			const_long = 2147483647
-			port.write(b'^'+struct.pack('<h',const_int)+struct.pack('<l',const_long))
+			const_float = 0.25
+			port.write(b'^'+struct.pack('<h',const_int)+struct.pack('<f',const_float))
 			time.sleep(0.015)
 			out = port.readline().decode("utf-8")
 			f.write(out)
@@ -16,8 +17,8 @@ def test_constant_command_acknowledgements():
 			assert(int(out,10)==const_int)
 			out = port.readline().decode("utf-8")
 			f.write(out)
-			print(int(out,10),const_long)
-			assert(int(out,10)==const_long)
+			print(float(out),const_float)
+			assert((float(out)-const_float)<0.01)
 			f.write('\n')
 
 def test_random_command_acknowledgements():
@@ -25,7 +26,8 @@ def test_random_command_acknowledgements():
 		for i in range(100):
 			randShort = random.randint(-32768,32768)
 			randLong = random.randint(-2147483648,2147483648)
-			port.write(b'^'+struct.pack('<h',randShort)+struct.pack('<l',randLong))
+			rand_float = (random.random()*10)-5
+			port.write(b'^'+struct.pack('<h',randShort)+struct.pack('<f',rand_float))
 			time.sleep(0.015)
 			out = port.readline().decode("utf-8")
 			f.write(out)
@@ -33,8 +35,8 @@ def test_random_command_acknowledgements():
 			assert(int(out,10)==randShort)
 			out = port.readline().decode("utf-8")
 			f.write(out)
-			print(int(out,10),randLong)
-			assert(int(out,10)==randLong)
+			print(float(out),rand_float)
+			assert((float(out)-rand_float)<0.01)
 			
 
 

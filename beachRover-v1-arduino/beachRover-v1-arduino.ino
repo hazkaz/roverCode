@@ -83,37 +83,44 @@ void loop() {
 
   int x, y, z;
   compass.read(&x, &y, &z);
-  float heading = atan2(y, x);
 
-  float headingDegrees = heading * 180 / M_PI;
-  float target = 0.;
-  float error = target - headingDegrees;
+  Info info;
+  info.sensor = MAGNETOMETER;
+  info.x = (float)x;
+  info.y = (float)y;
+  info.z = (float)z;
+//  Serial.println(info.x);
+  sendInfo(&info);
+//  float heading = atan2(y, x);
+//
+//  float headingDegrees = heading * 180 / M_PI;
+//  float target = 0.;
+//  float error = target - headingDegrees;
+//
+//  if (abs(error) > 180 && error > 0) {
+//    error = 180 - error;
+//  } else if (abs(error) > 180 && error < 0) {
+//    error = (int)(180 - error) % 360;
+//  }
+//
+//  float correction = error;
 
-  if (abs(error) > 180 && error > 0) {
-    error = 180 - error;
-  } else if (abs(error) > 180 && error < 0) {
-    error = (int)(180 - error) % 360;
-  }
+//  Command receivedCommand;
+//  bool commandReceived = readCommand(&receivedCommand);
+//  if (commandReceived) {
+////    Serial.println(receivedCommand.command);
+////    Serial.println(receivedCommand.param);
+//    if (receivedCommand.param >= 0) {
+//      indicate_led(YELLOW_LED, false);
+//    } else {
+//      indicate_led(YELLOW_LED, true);
+//    }
+//  }
+//
 
-  float correction = error;
-
-  if (error >= 0) {
-    indicate_led(YELLOW_LED, false);
-  } else {
-    indicate_led(YELLOW_LED, true);
-  }
-
-  Command receivedCommand;
-  bool commandReceived = readCommand(&receivedCommand);
-  if (commandReceived) {
-    Serial.println(receivedCommand.command);
-    Serial.println(receivedCommand.param);
-  }
-
-
-  motorDirection = kalman(motorDirection, (correction / 360) + 0.5, 0.98);
-  motorDirection = (correction / 360) + 0.5;
-  driveMotor(motorDirection, 0.35);
+//  motorDirection = kalman(motorDirection, (correction / 360) + 0.5, 0.98);
+//  motorDirection = (correction / 360) + 0.5;
+//  driveMotor(motorDirection, 0.35);
   delay(10);
 }
 

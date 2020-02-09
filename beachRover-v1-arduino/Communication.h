@@ -12,17 +12,19 @@ enum COMMAND_TYPE{
 
 struct Info{
   SENSOR_TYPE sensor;
-  int x;
-  int y;
-  int z;
+  float x;
+  float y;
+  float z;
 };
 
 struct Command{
   COMMAND_TYPE command;
-  long param;
+  float param;
 };
 
 int readInt();
 long readLong();
+float readFloat();
 double readDouble();
 bool readCommand(Command* commander);
+void sendInfo(Info* info);
