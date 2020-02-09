@@ -26,7 +26,7 @@ void flash_leds(){
 }
 
 void test_leds() {
- for(int i=0;i<3;i++){
+ for(int i=0;i<2;i++){
   flash_leds(); 
  }
 }
@@ -34,37 +34,12 @@ void test_leds() {
 
 //Mario main theme melody
 int mario[] = {
-  NOTE_E7, NOTE_E7, 0, NOTE_E7,
-  0, NOTE_C7, NOTE_E7, 0,
-  NOTE_G7, 0, 0,  0
+  NOTE_C7,NOTE_E7, NOTE_G7
 };
 
 //Mario main them tempo
 int mario_tempo[] = {
-  12, 12, 12, 12,
-  12, 12, 12, 12,
-  12, 12, 12, 12,
-  12, 12, 12, 12,
-
-  12, 12, 12, 12,
-  12, 12, 12, 12,
-  12, 12, 12, 12,
-  12, 12, 12, 12,
-
-  9, 9, 9,
-  12, 12, 12, 12,
-  12, 12, 12, 12,
-  12, 12, 12, 12,
-
-  12, 12, 12, 12,
-  12, 12, 12, 12,
-  12, 12, 12, 12,
-  12, 12, 12, 12,
-
-  9, 9, 9,
-  12, 12, 12, 12,
-  12, 12, 12, 12,
-  12, 12, 12, 12
+  9,9,9
 };
 
 void buzz(int targetPin, long frequency, long length) {
@@ -85,8 +60,6 @@ void buzz(int targetPin, long frequency, long length) {
 
 void sing(int song[],int song_length, int* tempo) {
   
-  Serial.print("Size of song");
-  Serial.println(song_length);
   for (int thisNote = 0; thisNote < song_length; thisNote++) {
     int noteDuration = 1000 / tempo[thisNote];
     buzz(BUZZER, song[thisNote], noteDuration);
@@ -99,7 +72,6 @@ void sing(int song[],int song_length, int* tempo) {
 
 void run_diagnostics() {
   pinMode(BUZZER, OUTPUT);//buzzer
-  pinMode(GREEN_LED, OUTPUT);//led indicator when singing a note
   sing(mario,sizeof(mario)/sizeof(mario[0]), mario_tempo);
   test_leds();
 }

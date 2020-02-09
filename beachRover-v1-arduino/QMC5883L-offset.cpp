@@ -41,7 +41,6 @@ void QMC5883L::init(int mag_x_offset,int mag_y_offset,int mag_z_offset){
 
 void QMC5883L::setMode(uint16_t mode,uint16_t odr,uint16_t rng,uint16_t osr){
   WriteReg(0x09,mode|odr|rng|osr);
-  Serial.println(mode|odr|rng|osr,HEX);
 }
 
 
