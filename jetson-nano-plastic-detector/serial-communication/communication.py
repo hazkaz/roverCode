@@ -4,6 +4,12 @@ import struct
 import random
 import math
 from enum import Enum
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
+from matplotlib import style
+
+fig = plt.figure()
+ax1 = fig.add_subplot(1,1,1)
 
 
 class SensorType(Enum):
@@ -37,7 +43,6 @@ class Info():
 
 
 def send_command(command):
-    # print(command.command_param)
     port.write(b'^'+struct.pack('<h', command.command_type.value)+struct.pack('<f', command.command_param))
 
 
@@ -46,31 +51,39 @@ def read_info():
     if(info[0] == 94 and len(info[1:-1])==14):
         data = struct.unpack('<hfff', info[1:-1])
         sensor_info = Info(data)
-        print(data)
         return sensor_info
     else:
         print(info, info[0])
         return None
+xs = []
+ys = []
 
+def main(i):
+    if (port.in_waiting >= 14):
+        sensor_info = read_info()
+        if(sensor_info is None):
+            return
+        heading = math.atan2(sensor_info.sensor_values[1], sensor_info.sensor_values[0]);
+        headingDegrees = heading * 180 / math.pi;
+        print(headingDegrees)
+        target = 0.;
+        error = target - headingDegrees;
+        if (abs(error) > 180 and error > 0) :
+            error = 180 - error
+        elif (abs(error) > 180 and error < 0):
+            error = (180 - error) % 360;
+        command_to_send = Command(CommandType.MOVE,error)
+        send_command(command_to_send)
+        correction = error;
 
 with serial.Serial('/dev/ttyUSB1', 115200, timeout=0.5) as port:
     time.sleep(5)
+    # ani = animation.FuncAnimation(fig, main, interval=5)
+    # plt.show()
     while True:
-        if (port.in_waiting >= 14):
-            sensor_info = read_info()
-            if(sensor_info is None):
-                continue
-            # print(sensor_info)
-            heading = math.atan2(sensor_info.sensor_values[1], sensor_info.sensor_values[0]);
-            headingDegrees = heading * 180 / math.pi;
-            print(sensor_info.sensor_values[0])
-            target = 0.;
-            error = target - headingDegrees;
-            if (abs(error) > 180 and error > 0) :
-                error = 180 - error
-            elif (abs(error) > 180 and error < 0):
-                error = (180 - error) % 360;
-            command_to_send = Command(CommandType.MOVE,error)
-            send_command(command_to_send)
-            correction = error;
-        time.sleep(0.15)
+        start_time = time.clock()
+        main(1)
+        while (time.clock()-start_time)<0.03:
+            pass
+        
+

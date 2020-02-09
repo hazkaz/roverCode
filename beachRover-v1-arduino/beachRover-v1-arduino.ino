@@ -86,9 +86,9 @@ void loop() {
 
   Info info;
   info.sensor = MAGNETOMETER;
-  info.x = (float)x;
-  info.y = (float)y;
-  info.z = (float)z;
+  info.x = x;
+  info.y = y;
+  info.z = z;
 //  Serial.println(info.x);
   sendInfo(&info);
 //  float heading = atan2(y, x);
@@ -105,23 +105,23 @@ void loop() {
 //
 //  float correction = error;
 
-//  Command receivedCommand;
-//  bool commandReceived = readCommand(&receivedCommand);
-//  if (commandReceived) {
-////    Serial.println(receivedCommand.command);
-////    Serial.println(receivedCommand.param);
-//    if (receivedCommand.param >= 0) {
-//      indicate_led(YELLOW_LED, false);
-//    } else {
-//      indicate_led(YELLOW_LED, true);
-//    }
-//  }
+  Command receivedCommand;
+  bool commandReceived = readCommand(&receivedCommand);
+  if (commandReceived) {
+//    Serial.println(receivedCommand.command);
+//    Serial.println(receivedCommand.param);
+    if (receivedCommand.param >= 0) {
+      indicate_led(YELLOW_LED, false);
+    } else {
+      indicate_led(YELLOW_LED, true);
+    }
+  }
 //
 
 //  motorDirection = kalman(motorDirection, (correction / 360) + 0.5, 0.98);
 //  motorDirection = (correction / 360) + 0.5;
 //  driveMotor(motorDirection, 0.35);
-  delay(10);
+  delay(30);
 }
 
 float pd(float error) {
